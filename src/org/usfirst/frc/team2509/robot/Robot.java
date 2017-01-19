@@ -1,80 +1,59 @@
 package org.usfirst.frc.team2509.robot;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Timer;
 
-/**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the IterativeRobot
- * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the manifest file in the resource
- * directory.
- */
+import com.ctre.CANTalon;
+
 public class Robot extends IterativeRobot {
-	final String defaultAuto = "Default";
-	final String customAuto = "My Auto";
-	String autoSelected;
-	SendableChooser<String> chooser = new SendableChooser<>();
-
-	/**
-	 * This function is run when the robot is first started up and should be
-	 * used for any initialization code.
-	 */
-	@Override
+	Joystick stick;
+	CANTalon m1, m2, m3, m4;
+	RobotDrive drive;
+	UsbCamera camera;
 	public void robotInit() {
-		chooser.addDefault("Default Auto", defaultAuto);
-		chooser.addObject("My Auto", customAuto);
-		SmartDashboard.putData("Auto choices", chooser);
+		stick= new Joystick(0);
+		m1= new CANTalon(0);
+		m2= new CANTalon(1);
+		m2.setInverted(true);
+		m3= new CANTalon(2);
+		m4= new CANTalon(3);
+		m4.setInverted(true);
+		drive= new RobotDrive(m1,m3,m2,m4);
+		camera = CameraServer.getInstance().startAutomaticCapture();
+		camera.setResolution(720, 405);
 	}
 
-	/**
-	 * This autonomous (along with the chooser code above) shows how to select
-	 * between different autonomous modes using the dashboard. The sendable
-	 * chooser code works with the Java SmartDashboard. If you prefer the
-	 * LabVIEW Dashboard, remove all of the chooser code and uncomment the
-	 * getString line to get the auto name from the text box below the Gyro
-	 *
-	 * You can add additional auto modes by adding additional comparisons to the
-	 * switch structure below with additional strings. If using the
-	 * SendableChooser make sure to add them to the chooser code above as well.
-	 */
-	@Override
 	public void autonomousInit() {
-		autoSelected = chooser.getSelected();
-		// autoSelected = SmartDashboard.getString("Auto Selector",
-		// defaultAuto);
-		System.out.println("Auto selected: " + autoSelected);
+		drive.drive(0.5, 0);
+		Timer.delay(2.0);
+		drive.drive(0, 0);
 	}
 
-	/**
-	 * This function is called periodically during autonomous
-	 */
-	@Override
 	public void autonomousPeriodic() {
-		switch (autoSelected) {
-		case customAuto:
-			// Put custom auto code here
-			break;
-		case defaultAuto:
-		default:
-			// Put default auto code here
-			break;
+		
+	}
+
+	public void teleopPeriodic(){
+		drive.setSafetyEnabled(true);
+		while(isEnabled()&& isOperatorControl()){
+			drive.mecanumDrive_Cartesian(getScaledX(), getScaledY(), getScaledZ(), 0);
 		}
 	}
 
-	/**
-	 * This function is called periodically during operator control
-	 */
-	@Override
-	public void teleopPeriodic() {
-	}
-
-	/**
-	 * This function is called periodically during test mode
-	 */
-	@Override
 	public void testPeriodic() {
 	}
+	
+	public double getScaledX(){
+		return (stick.getX()*((stick.getRawAxis(3)+1.5)*0.4));
+	}
+	public double getScaledY(){
+		return (stick.getY()*((stick.getRawAxis(3)+1.5)*0.4));
+	}
+	public double getScaledZ(){
+		return (stick.getZ()*((stick.getRawAxis(3)+1.5)*0.4));
+	}
 }
-
