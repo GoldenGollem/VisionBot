@@ -36,5 +36,12 @@ public class Vision extends Subsystem {
     		System.out.println("NO TARGET");
     	}
     }
+    public void DropGear(){
+    	
+    }
+    public double getTargetSpeed(){
+		return 0;
+    	
+    }
 }
 

@@ -73,6 +73,7 @@ public class Robot extends IterativeRobot {
     	autonomousCommand = oi.getAutonomous(autoCommand);
         // schedule the autonomous command (example)
     	if (autonomousCommand != null) autonomousCommand.start();
+    	System.out.println("AutoMode: " + oi.CHOOSER.getSelected());
 	}
 
 	/**
